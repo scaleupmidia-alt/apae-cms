@@ -8,8 +8,8 @@ import { getPayload } from 'payload'
 import config from './payload.config'
 
 // Diagnóstico: quais variáveis de banco existem no ambiente (nomes, sem valores).
-const dbVars = Object.keys(process.env).filter((k) => /POSTGRES|DATABASE|PG|NEON/i.test(k))
-console.log('DB env vars presentes:', dbVars.join(', ') || '(nenhuma)')
+const dbVars = Object.keys(process.env).filter((k) => /POSTGRES|DATABASE|PG|NEON|BLOB|TOKEN|STORE/i.test(k))
+console.log('DB/STORAGE env vars presentes:', dbVars.join(', ') || '(nenhuma)')
 
 const payload = await getPayload({ config })
 
