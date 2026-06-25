@@ -73,15 +73,13 @@ export default buildConfig({
   sharp,
   // Storage de imagens: em producao (Vercel Blob) quando houver token;
   // sem token, o Payload usa o disco local (desenvolvimento).
-  plugins: [
-    ...(process.env.BLOB_READ_WRITE_TOKEN
-      ? [
-          vercelBlobStorage({
-            enabled: true,
-            collections: { media: true },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-          }),
-        ]
-      : []),
-  ],
+  // Detecta o token mesmo com prefixo custom (ex.: APAE_CMS_BLOB_READ_WRITE_TOKEN).
+  plugins: (() => {
+    const blobToken =
+      process.env.BLOB_READ_WRITE_TOKEN ||
+      Object.entries(process.env).find(([k]) => k.endsWith('BLOB_READ_WRITE_TOKEN'))?.[1]
+    return blobToken
+      ? [vercelBlobStorage({ enabled: true, collections: { media: true }, token: blobToken })]
+      : []
+  })(),
 })
