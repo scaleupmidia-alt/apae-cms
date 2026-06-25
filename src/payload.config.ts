@@ -41,15 +41,19 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  // Banco: usa Postgres quando DATABASE_URI for uma URL postgres (producao);
-  // caso contrario, SQLite local em arquivo (desenvolvimento, zero credenciais).
-  db: (process.env.DATABASE_URI || '').startsWith('postgres')
-    ? postgresAdapter({
-        pool: { connectionString: process.env.DATABASE_URI as string },
-      })
-    : sqliteAdapter({
-        client: { url: process.env.DATABASE_URI || 'file:./apae-cms.db' },
-      }),
+  // Banco: usa Postgres quando houver uma URL postgres (producao). Aceita os
+  // nomes que a Vercel Postgres injeta (POSTGRES_URL / DATABASE_URL) ou um
+  // DATABASE_URI manual; caso contrario, SQLite local (desenvolvimento).
+  db: (() => {
+    const url =
+      process.env.DATABASE_URI ||
+      process.env.POSTGRES_URL ||
+      process.env.DATABASE_URL ||
+      'file:./apae-cms.db'
+    return url.startsWith('postgres')
+      ? postgresAdapter({ pool: { connectionString: url } })
+      : sqliteAdapter({ client: { url } })
+  })(),
   // i18n do PAINEL: portugues como idioma padrao (cada usuario tambem pode
   // escolher o idioma no proprio perfil).
   i18n: {
