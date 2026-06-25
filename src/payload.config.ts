@@ -75,10 +75,16 @@ export default buildConfig({
   // sem token, o Payload usa o disco local (desenvolvimento).
   // Detecta o token mesmo com prefixo custom (ex.: APAE_CMS_BLOB_READ_WRITE_TOKEN).
   plugins: (() => {
-    const blobToken =
+    const raw =
       process.env.BLOB_READ_WRITE_TOKEN ||
       Object.entries(process.env).find(([k]) => k.endsWith('BLOB_READ_WRITE_TOKEN'))?.[1]
-    return blobToken
+    const blobToken = raw?.trim()
+    // Só ativa o Blob com token de formato válido — token inválido não pode
+    // derrubar o build inteiro.
+    if (blobToken && !/^vercel_blob_rw_/.test(blobToken)) {
+      console.warn('[Blob] BLOB_READ_WRITE_TOKEN com formato inválido — storage de imagens desativado.')
+    }
+    return blobToken && /^vercel_blob_rw_/.test(blobToken)
       ? [vercelBlobStorage({ enabled: true, collections: { media: true }, token: blobToken })]
       : []
   })(),
