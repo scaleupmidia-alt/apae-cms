@@ -45,8 +45,12 @@ export default buildConfig({
   // nomes que a Vercel Postgres injeta (POSTGRES_URL / DATABASE_URL) ou um
   // DATABASE_URI manual; caso contrario, SQLite local (desenvolvimento).
   db: (() => {
+    // Prefere a conexão DIRETA (não-pooled) da Neon/Vercel. A conexão com pool
+    // (pgbouncer) não aplica criação de schema (DDL) de forma confiável.
     const url =
       process.env.DATABASE_URI ||
+      process.env.POSTGRES_URL_NON_POOLING ||
+      process.env.DATABASE_URL_UNPOOLED ||
       process.env.POSTGRES_URL ||
       process.env.DATABASE_URL ||
       'file:./apae-cms.db'
