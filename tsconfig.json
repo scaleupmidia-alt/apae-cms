@@ -43,6 +43,7 @@
     "node_modules",
     "src/migrate.ts",
     "src/migrate-rest.ts",
+    "src/dbpush.ts",
     "src/migration-data"
   ]
 }

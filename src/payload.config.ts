@@ -53,10 +53,10 @@ export default buildConfig({
     return url.startsWith('postgres')
       ? postgresAdapter({
           pool: { connectionString: url },
-          // Cria/sincroniza as tabelas automaticamente (inclusive em produção).
-          // Adequado para este painel (fonte única do schema). Trocar por
-          // migrations se o time crescer.
-          push: true,
+          // push só é ligado no passo de build (PAYLOAD_PUSH=true), onde as
+          // ferramentas de schema existem. Em runtime fica desligado (o schema
+          // já foi criado no build), evitando erro de cold start no serverless.
+          push: process.env.PAYLOAD_PUSH === 'true',
         })
       : sqliteAdapter({ client: { url } })
   })(),
