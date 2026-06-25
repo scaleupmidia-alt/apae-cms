@@ -51,7 +51,13 @@ export default buildConfig({
       process.env.DATABASE_URL ||
       'file:./apae-cms.db'
     return url.startsWith('postgres')
-      ? postgresAdapter({ pool: { connectionString: url } })
+      ? postgresAdapter({
+          pool: { connectionString: url },
+          // Cria/sincroniza as tabelas automaticamente (inclusive em produção).
+          // Adequado para este painel (fonte única do schema). Trocar por
+          // migrations se o time crescer.
+          push: true,
+        })
       : sqliteAdapter({ client: { url } })
   })(),
   // i18n do PAINEL: portugues como idioma padrao (cada usuario tambem pode
