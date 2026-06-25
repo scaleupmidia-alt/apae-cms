@@ -12,5 +12,8 @@ const dbVars = Object.keys(process.env).filter((k) => /POSTGRES|DATABASE|PG|NEON
 console.log('DB env vars presentes:', dbVars.join(', ') || '(nenhuma)')
 
 const payload = await getPayload({ config })
-payload.logger.info('Schema do banco sincronizado (push de build).')
+
+// Verificação REAL: se as tabelas não existirem, isto lança e o build falha.
+const { totalDocs } = await payload.count({ collection: 'users' })
+payload.logger.info(`Schema OK — tabela users acessível (usuarios=${totalDocs}).`)
 process.exit(0)
