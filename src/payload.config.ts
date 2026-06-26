@@ -23,6 +23,10 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Trava o painel no tema claro (evita bug do tema escuro no build de
+    // produção Turbopack/Next 16, que deixava a tela preta em sistemas no
+    // modo escuro).
+    theme: 'light',
     importMap: {
       baseDir: path.resolve(dirname),
     },
